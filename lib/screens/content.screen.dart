@@ -3,6 +3,7 @@ import 'package:flutter_tabbar_scroll_sync/widgets/category_tab_bar.widget.dart'
 import 'dart:math' as math;
 
 import 'package:flutter_tabbar_scroll_sync/widgets/list_group.widget.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class ContentScreen extends StatefulWidget {
   const ContentScreen({Key? key}) : super(key: key);
@@ -13,7 +14,7 @@ class ContentScreen extends StatefulWidget {
 
 class _ContentScreenState extends State<ContentScreen>
     with TickerProviderStateMixin {
-  late TabController _categoryTabController;
+  late TabController _tabController;
   final List<dynamic> _dataList = [];
   final List<dynamic> _tabInfoList = [];
 
@@ -40,8 +41,15 @@ class _ContentScreenState extends State<ContentScreen>
     super.initState();
     _getData();
     _initTabList();
-    _categoryTabController =
+    _tabController =
         TabController(length: _tabInfoList.length, vsync: this);
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    // Clear all pending timer before dispose()
+    VisibilityDetectorController.instance.notifyNow();
   }
 
   @override
@@ -52,9 +60,20 @@ class _ContentScreenState extends State<ContentScreen>
           children: List.generate(_dataList.length, (index) {
             var item = _dataList[index];
 
-            return ListGroup(
-              label: item['category'],
-              data: item['items'],
+            return VisibilityDetector(
+              key: _tabInfoList[index]['key'],
+              onVisibilityChanged: (VisibilityInfo info) {
+                double screenHeight = MediaQuery.of(context).size.height;
+                double visibleAreaOnScreen = info.visibleBounds.bottom - info.visibleBounds.top;
+
+                if (info.visibleFraction > 0.5 || visibleAreaOnScreen > screenHeight * 0.5) {
+                  _tabController.animateTo(index);
+                }
+              },
+              child: ListGroup(
+                label: item['category'],
+                data: item['items'],
+              ),
             );
           }),
         ),
@@ -65,9 +84,13 @@ class _ContentScreenState extends State<ContentScreen>
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
+            SliverAppBar(
+              title: Text('Tab bar sync with scroll'),
+              expandedHeight: 160,
+            ),
             SliverPersistentHeader(
               delegate: _CategoryTabBarDelegate(
-                controller: _categoryTabController,
+                controller: _tabController,
                 data: _tabInfoList,
               ),
               pinned: true,
@@ -93,7 +116,10 @@ class _CategoryTabBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent,) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return SizedBox.expand(
       child: CategoryTabBar(controller: controller, data: data),
     );

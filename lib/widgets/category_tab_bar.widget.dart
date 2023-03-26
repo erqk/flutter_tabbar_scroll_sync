@@ -24,6 +24,13 @@ class _CategoryTabBarState extends State<CategoryTabBar> {
           isScrollable: true,
           labelPadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
           indicatorWeight: 6,
+          onTap: (index) {
+            GlobalKey globalKey = widget.data[index]['key'];
+            Scrollable.ensureVisible(
+              globalKey.currentContext!,
+              duration: const Duration(milliseconds: 250),
+            );
+          },
           tabs: List.generate(widget.data.length, (index) {
             var item = widget.data[index];
 
