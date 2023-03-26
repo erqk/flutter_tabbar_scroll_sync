@@ -11,9 +11,35 @@ class ListGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: List.generate(data.length, (index) {
-        return ListItem(id: '${index + 1}');
-      }),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 20, 0, 10),
+          child: Text(
+            label,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.apply(fontWeightDelta: 2),
+          ),
+        ),
+        ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: index == data.length - 1 ? 20 : 0,
+              ),
+              child: ListItem(id: '${index + 1}'),
+            );
+          },
+          separatorBuilder: (context, index) {
+            return const Divider();
+          },
+          itemCount: data.length,
+        )
+      ],
     );
   }
 }
