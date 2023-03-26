@@ -41,8 +41,7 @@ class _ContentScreenState extends State<ContentScreen>
     super.initState();
     _getData();
     _initTabList();
-    _tabController =
-        TabController(length: _tabInfoList.length, vsync: this);
+    _tabController = TabController(length: _tabInfoList.length, vsync: this);
   }
 
   @override
@@ -64,9 +63,11 @@ class _ContentScreenState extends State<ContentScreen>
               key: _tabInfoList[index]['key'],
               onVisibilityChanged: (VisibilityInfo info) {
                 double screenHeight = MediaQuery.of(context).size.height;
-                double visibleAreaOnScreen = info.visibleBounds.bottom - info.visibleBounds.top;
+                double visibleAreaOnScreen =
+                    info.visibleBounds.bottom - info.visibleBounds.top;
 
-                if (info.visibleFraction > 0.5 || visibleAreaOnScreen > screenHeight * 0.5) {
+                if (info.visibleFraction > 0.5 ||
+                    visibleAreaOnScreen > screenHeight * 0.5) {
                   _tabController.animateTo(index);
                 }
               },
@@ -95,8 +96,11 @@ class _ContentScreenState extends State<ContentScreen>
               ),
               pinned: true,
             ),
-            SliverToBoxAdapter(
-              child: contentList(),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              sliver: SliverToBoxAdapter(
+                child: contentList(),
+              ),
             )
           ],
         ),
@@ -121,7 +125,11 @@ class _CategoryTabBarDelegate extends SliverPersistentHeaderDelegate {
     bool overlapsContent,
   ) {
     return SizedBox.expand(
-      child: CategoryTabBar(controller: controller, data: data),
+      child: CategoryTabBar(
+        controller: controller,
+        data: data,
+        overlapsContent: shrinkOffset / maxExtent > 0,
+      ),
     );
   }
 

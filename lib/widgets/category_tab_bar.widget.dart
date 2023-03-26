@@ -5,10 +5,12 @@ class CategoryTabBar extends StatefulWidget {
     Key? key,
     required this.controller,
     required this.data,
+    required this.overlapsContent,
   }) : super(key: key);
 
   final TabController controller;
   final List<dynamic> data;
+  final bool overlapsContent;
 
   @override
   State<CategoryTabBar> createState() => _CategoryTabBarState();
@@ -18,6 +20,8 @@ class _CategoryTabBarState extends State<CategoryTabBar> {
   @override
   Widget build(BuildContext context) {
     return Material(
+      elevation: widget.overlapsContent ? 16 : 0,
+      shadowColor: Colors.black38,
       child: LayoutBuilder(
         builder: (context, constraints) => TabBar(
           controller: widget.controller,

@@ -13,6 +13,7 @@ class ListItem extends StatelessWidget {
           flex: 1,
           child: Image.network('https://picsum.photos/500/300?random=$id'),
         ),
+        const SizedBox(width: 10),
         Expanded(
           flex: 2,
           child: Text('This is item number $id'),
